@@ -20,6 +20,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 	usersRoutes.UserRoutes(router)
+
 	router.Use(middleware.Authentication())
 
 	// API-2
@@ -35,5 +36,4 @@ func main() {
 	})
 
 	router.Run(":" + port)
-
 }

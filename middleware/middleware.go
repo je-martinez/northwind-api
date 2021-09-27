@@ -30,6 +30,8 @@ func Authentication() gin.HandlerFunc {
 		c.Set("first_name", claims.First_Name)
 		c.Set("last_name", claims.Last_Name)
 		c.Set("uid", claims.UID)
+
 		c.Next()
+
 	}
 }

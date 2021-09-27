@@ -21,16 +21,16 @@ type SignedDetails struct {
 	Email      string
 	First_Name string
 	Last_Name  string
-	UID        int
-	ExpirestAt int64
+	UID        string
 	jwt.StandardClaims
 }
 
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "users")
+
 var SECRET_KEY string = os.Getenv("SECRET_KEY")
 
 // GenerateAllTokens generates both teh detailed token and refresh token
-func GenerateAllTokens(email string, firstName string, lastName string, uid int) (signedToken string, signedRefreshToken string, err error) {
+func GenerateAllTokens(email string, firstName string, lastName string, uid string) (signedToken string, signedRefreshToken string, err error) {
 	claims := &SignedDetails{
 		Email:      email,
 		First_Name: firstName,
@@ -80,7 +80,7 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 		return
 	}
 
-	if claims.ExpirestAt < time.Now().Local().Unix() {
+	if claims.ExpiresAt < time.Now().Local().Unix() {
 		msg = fmt.Sprintf("token is expired")
 		msg = err.Error()
 		return
@@ -90,7 +90,7 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 }
 
 //UpdateAllTokens renews the user tokens when they login
-func UpdateAllTokens(signedToken string, signedRefreshToken string, userId int) {
+func UpdateAllTokens(signedToken string, signedRefreshToken string, userId string) {
 	var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 	var updateObj primitive.D
@@ -98,8 +98,8 @@ func UpdateAllTokens(signedToken string, signedRefreshToken string, userId int) 
 	updateObj = append(updateObj, bson.E{"token", signedToken})
 	updateObj = append(updateObj, bson.E{"refresh_token", signedRefreshToken})
 
-	Updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	updateObj = append(updateObj, bson.E{"updated_at", Updated_at})
+	Updated_At, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	updateObj = append(updateObj, bson.E{"updated_at", Updated_At})
 
 	upsert := true
 	filter := bson.M{"user_id": userId}
