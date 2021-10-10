@@ -20,3 +20,8 @@ type User struct {
 	Updated_At    time.Time          `json:"updated_at"`
 	User_Id       int                `json:"user_id"`
 }
+
+type UserTokens struct {
+	Token        *string `json:"token"`
+	RefreshToken *string `json:"refresh_token"`
+}
